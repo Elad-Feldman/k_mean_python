@@ -8,20 +8,17 @@ class Cluster:
 
     def update_center(self, dot, sign=1):
         """ center =  (center *N + dot) / N+1 """
-        if self.N +sign ==0:
+        if self.N + sign == 0:
             print("remove the only dot - Error !!")
+
         for axis in range(len(dot)):
-            self.center[axis] = ((self.center[axis] * self.N) + (sign * dot[axis])) / (self.N +sign)
+            self.center[axis] = ((self.center[axis] * self.N) + (sign * dot[axis])) / (self.N + sign)
         self.N += sign
 
-
-
-
-    def get_distance(self, dot,sum = 0):
+    def get_distance(self, dot, sum = 0):
         for axis in range(len(dot)):
             sum += (self.center[axis] - dot[axis]) ** 2
         return sum
-
 
 
 def load_data_to_dots(filename):
@@ -45,6 +42,7 @@ def get_nearest_cluster_index(dot, cluster_list):
             index_of_min_distance = j
     return index_of_min_distance
 
+
 def print_outputs(dot_list):
     print("expected:")
     for dot in dot_list:
@@ -61,7 +59,7 @@ def print_results(clusters):
 
 
 def kmean(k, max_iter, test_index):
-    filename = "input_"+test_index+".txt"
+    filename = "input_" + test_index + ".txt"
     dot_list = load_data_to_dots(filename)
     dot_in_cluster = [-1] * len(dot_list)
     clusters = []
@@ -73,12 +71,12 @@ def kmean(k, max_iter, test_index):
     iter_num = 0
     is_clsuters_changed = True
     while iter_num < max_iter and is_clsuters_changed:
-        is_clsuters_changed =  False
+        is_clsuters_changed = False
 
         for i, dot in enumerate(dot_list):
             j = get_nearest_cluster_index(dot, clusters)
 
-            if dot_in_cluster[i] == -1: ## dot not in any cluster
+            if dot_in_cluster[i] == -1:  ## dot not in any cluster
                 clusters[j].update_center(dot)
                 dot_in_cluster[i] = j  # set dot i to cluster j
                 is_clsuters_changed = True
@@ -93,6 +91,4 @@ def kmean(k, max_iter, test_index):
 
     print_results(clusters)
 
-    print_outputs(load_data_to_dots("output_"+test_index+".txt"))
-
-
+    print_outputs(load_data_to_dots("output_" + test_index + ".txt"))
