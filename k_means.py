@@ -1,3 +1,5 @@
+import argparse
+
 class Cluster:
     def __init__(self, dot):
         self.center = dot
@@ -58,8 +60,15 @@ def print_results(clusters):
         print("")
 
 
-def kmean(k, max_iter, test_index):
-    filename = "input_" + test_index + ".txt"
+def kmean(k,max_iter,filename):
+    #filename = "input_" + test_index + ".txt"
+    """input_list =input("insert filename").split(" ")
+    k=input_list.pop(0)
+    max_iter = input_list.pop(0)
+    input_list.remove(0)
+    filename=input_list.pop(0)"""
+
+
     dot_list = load_data_to_dots(filename)
     dot_in_cluster = [-1] * len(dot_list)
     clusters = []
@@ -91,4 +100,4 @@ def kmean(k, max_iter, test_index):
 
     print_results(clusters)
 
-    print_outputs(load_data_to_dots("output_" + test_index + ".txt"))
+    print_outputs(load_data_to_dots(filename))
