@@ -20,7 +20,8 @@ def tests():
     k = args.k_num
     max_iter = args.max_iter
 
-    filename = input("insert file name")
+    #filename = input("insert file name")
+    filename="input_1.txt"
     km.kmean(k,max_iter,filename)
 
 tests()

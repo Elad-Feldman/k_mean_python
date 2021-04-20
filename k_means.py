@@ -20,7 +20,7 @@ class Cluster:
     def get_distance(self, dot, sum = 0):
         for axis in range(len(dot)):
             sum += (self.center[axis] - dot[axis]) ** 2
-        return sum
+        return sum ** 0.5
 
 
 def load_data_to_dots(filename):
@@ -70,12 +70,12 @@ def kmean(k,max_iter,filename):
 
 
     dot_list = load_data_to_dots(filename)
-    dot_in_cluster = [-1] * len(dot_list)
+    dot_in_cluster = [[-1,-1]] * len(dot_list)
     clusters = []
 
     for i in range(k):  ## create K cluters
         clusters.append(Cluster(dot_list[i]))
-        dot_in_cluster[i] = i
+        dot_in_cluster[i] = [i,i];
 
     iter_num = 0
     is_clsuters_changed = True
@@ -84,15 +84,17 @@ def kmean(k,max_iter,filename):
 
         for i, dot in enumerate(dot_list):
             j = get_nearest_cluster_index(dot, clusters)
-
-            if dot_in_cluster[i] == -1:  ## dot not in any cluster
+            dot_in_cluster[i][1]=j
+        for i, dot in enumerate(dot_list):
+            j = dot_in_cluster[i][1]
+            if dot_in_cluster[i][0] == -1:  ## dot not in any cluster
                 clusters[j].update_center(dot)
-                dot_in_cluster[i] = j  # set dot i to cluster j
+                dot_in_cluster[i][0] = j  # set dot i to cluster j
                 is_clsuters_changed = True
-            elif dot_in_cluster[i] != j:
-                clusters[dot_in_cluster[i]].update_center(dot, -1)  ## remove dot from old cluster
+            elif dot_in_cluster[i][0] != j:
+                clusters[dot_in_cluster[i][0]].update_center(dot, -1)  ## remove dot from old cluster
                 clusters[j].update_center(dot)
-                dot_in_cluster[i] = j
+                dot_in_cluster[i][0] = j
                 is_clsuters_changed = True
         iter_num += 1
 
@@ -100,4 +102,4 @@ def kmean(k,max_iter,filename):
 
     print_results(clusters)
 
-    print_outputs(load_data_to_dots(filename))
+    print_outputs(load_data_to_dots("output_1.txt"))
