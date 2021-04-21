@@ -8,14 +8,18 @@ class Cluster:
     def get_center(self):
         return self.center
 
-    def update_center(self, dot, sign=1):
+      def update_center(self, dot, sign=1):
         """ center =  (center *N + dot) / N+1 """
         if self.N + sign == 0:
             print("remove the only dot - Error !!")
 
-        for axis in range(len(dot)):
-            self.center[axis] = ((self.center[axis] * self.N) + (sign * dot[axis])) / (self.N + sign)
+        f = lambda arr, num : [ele * num for ele in arr]
+        tmp = f(self.center,self.N)
+        dot = f(dot,sign)
+        self.center = [sum(x) for x in zip(tmp,dot)]
         self.N += sign
+        self.center = f(self.center, 1/self.N)
+
 
     def get_distance(self, dot, sum = 0):
         for axis in range(len(dot)):
@@ -70,12 +74,13 @@ def kmean(k,max_iter,filename):
 
 
     dot_list = load_data_to_dots(filename)
-    dot_in_cluster = [[-1,-1]] * len(dot_list)
+    dot_in_cluster = [-1] * len(dot_list)
+    dot_should_be_at = [-1] * len(dot_list)
     clusters = []
 
     for i in range(k):  ## create K cluters
         clusters.append(Cluster(dot_list[i]))
-        dot_in_cluster[i] = [i,i];
+        dot_in_cluster[i] = i
 
     iter_num = 0
     is_clsuters_changed = True
@@ -83,19 +88,21 @@ def kmean(k,max_iter,filename):
         is_clsuters_changed = False
 
         for i, dot in enumerate(dot_list):
-            j = get_nearest_cluster_index(dot, clusters)
-            dot_in_cluster[i][1]=j
+            dot_should_be_at[i] = get_nearest_cluster_index(dot, clusters)
+
         for i, dot in enumerate(dot_list):
-            j = dot_in_cluster[i][1]
-            if dot_in_cluster[i][0] == -1:  ## dot not in any cluster
+            j = dot_should_be_at[i]
+            if dot_in_cluster[i] == -1:  ## dot not in any cluster
                 clusters[j].update_center(dot)
-                dot_in_cluster[i][0] = j  # set dot i to cluster j
+                dot_in_cluster[i] = j  # set dot i to cluster j
                 is_clsuters_changed = True
-            elif dot_in_cluster[i][0] != j:
-                clusters[dot_in_cluster[i][0]].update_center(dot, -1)  ## remove dot from old cluster
+
+            elif dot_in_cluster[i] != j:
+                clusters[dot_in_cluster[i]].update_center(dot, -1)  ## remove dot from old cluster
                 clusters[j].update_center(dot)
-                dot_in_cluster[i][0] = j
+                dot_in_cluster[i] = j
                 is_clsuters_changed = True
+
         iter_num += 1
 
         print(iter_num, is_clsuters_changed)
