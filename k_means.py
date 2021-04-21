@@ -8,7 +8,7 @@ class Cluster:
     def get_center(self):
         return self.center
 
-      def update_center(self, dot, sign=1):
+    def update_center(self, dot, sign=1):
         """ center =  (center *N + dot) / N+1 """
         if self.N + sign == 0:
             print("remove the only dot - Error !!")
@@ -27,10 +27,18 @@ class Cluster:
         return sum ** 0.5
 
 
-def load_data_to_dots(filename):
+def load_data_to_dots():
     dots_list = []
-    file1 = open(filename, 'r')
-    Lines = file1.readlines()
+    Lines = []
+    #file1 = open(filename, 'r')
+    while (True):
+        try:
+            line = input()
+            Lines.append(line)
+        except EOFError:
+            break
+
+
 
     for line in Lines:
         dot = [float(word) for word in line.split(sep=",")]
@@ -57,23 +65,28 @@ def print_outputs(dot_list):
         print("")
 
 
-def print_results(clusters):
+def print_results(clusters,):
     for cluster in clusters:
-        for num in cluster.get_center():
-            print("%.4f" % num, end=",")
+        d=  len(cluster.get_center())
+        for i,num in enumerate( cluster.get_center()):
+            end_char = "" if i+1==d else ","
+            print("%.4f" % num, end=end_char)
         print("")
 
 
-def kmean(k,max_iter,filename):
-    #filename = "input_" + test_index + ".txt"
-    """input_list =input("insert filename").split(" ")
-    k=input_list.pop(0)
-    max_iter = input_list.pop(0)
-    input_list.remove(0)
-    filename=input_list.pop(0)"""
+def kmean():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("k_num", help="k", type=int)
 
-
-    dot_list = load_data_to_dots(filename)
+    parser.add_argument("max_iter", help="max iteration", type=int, default=200, nargs='?')
+    args = parser.parse_args()
+    k = args.k_num
+    max_iter = args.max_iter
+    assert type(k) is int,"k must be an integer"
+    assert k>0, "k must be positive"
+    assert type(max_iter) is int, "max_iter must be an integer"
+    assert max_iter > 0, "max_iter must be positive"
+    dot_list = load_data_to_dots()
     dot_in_cluster = [-1] * len(dot_list)
     dot_should_be_at = [-1] * len(dot_list)
     clusters = []
@@ -105,8 +118,9 @@ def kmean(k,max_iter,filename):
 
         iter_num += 1
 
-        print(iter_num, is_clsuters_changed)
+
 
     print_results(clusters)
 
-    print_outputs(load_data_to_dots("output_1.txt"))
+
+kmean()
