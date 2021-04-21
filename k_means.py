@@ -6,14 +6,37 @@ class Cluster:
     def get_center(self):
         return self.center
 
+    def update_center2(self, dot, sign=1):
+        """ center =  (center *N + dot) / N+1 """
+        if self.N + sign == 0:
+            print("remove the only dot - Error !!")
+        dim_num = len(dot)
+        for axis in range(dim_num):
+            tmp = self.center[axis] * self.N
+            dot[axis] = dot[axis] * sign
+            self.center[axis] = tmp + dot[axis]
+            self.N += sign
+            self.center[axis] = self.center[axis] / self.N
+
+        f = lambda arr, num: [ele * num for ele in arr]
+        tmp = f(self.center, self.N)
+        dot = f(dot, sign)
+        self.center = [sum(x) for x in zip(tmp, dot)]
+        self.N += sign
+        self.center = f(self.center, 1 / self.N)
+
     def update_center(self, dot, sign=1):
         """ center =  (center *N + dot) / N+1 """
         if self.N + sign == 0:
             print("remove the only dot - Error !!")
 
-        for axis in range(len(dot)):
-            self.center[axis] = ((self.center[axis] * self.N) + (sign * dot[axis])) / (self.N + sign)
+        f = lambda arr, num : [ele * num for ele in arr]
+        tmp = f(self.center,self.N)
+        dot = f(dot,sign)
+        self.center = [sum(x) for x in zip(tmp,dot)]
         self.N += sign
+        self.center = f(self.center, 1/self.N)
+
 
     def get_distance(self, dot, sum = 0):
         for axis in range(len(dot)):
@@ -22,6 +45,8 @@ class Cluster:
 
 
 def load_data_to_dots(filename):
+    import  os
+    os.system("cd")
     dots_list = []
     file1 = open(filename, 'r')
     Lines = file1.readlines()
@@ -59,9 +84,10 @@ def print_results(clusters):
 
 
 def kmean(k, max_iter, test_index):
-    filename = "input_" + test_index + ".txt"
+    filename = 'C:/Users/Eladi/OneDrive - mail.tau.ac.il/\Python Projects/ex1_SW_proejct/input_'+ test_index + ".txt"
     dot_list = load_data_to_dots(filename)
     dot_in_cluster = [-1] * len(dot_list)
+    dot_should_be_at = [-1] * len(dot_list)
     clusters = []
 
     for i in range(k):  ## create K cluters
@@ -74,21 +100,25 @@ def kmean(k, max_iter, test_index):
         is_clsuters_changed = False
 
         for i, dot in enumerate(dot_list):
-            j = get_nearest_cluster_index(dot, clusters)
+            dot_should_be_at[i] = get_nearest_cluster_index(dot, clusters)
 
+        for i, dot in enumerate(dot_list):
+            j = dot_should_be_at[i]
             if dot_in_cluster[i] == -1:  ## dot not in any cluster
                 clusters[j].update_center(dot)
                 dot_in_cluster[i] = j  # set dot i to cluster j
                 is_clsuters_changed = True
+
             elif dot_in_cluster[i] != j:
                 clusters[dot_in_cluster[i]].update_center(dot, -1)  ## remove dot from old cluster
                 clusters[j].update_center(dot)
                 dot_in_cluster[i] = j
                 is_clsuters_changed = True
+
         iter_num += 1
 
         print(iter_num, is_clsuters_changed)
 
     print_results(clusters)
 
-    print_outputs(load_data_to_dots("output_" + test_index + ".txt"))
+    print_outputs(load_data_to_dots('C:/Users/Eladi/OneDrive - mail.tau.ac.il/\Python Projects/ex1_SW_proejct/output_' + test_index + ".txt"))
