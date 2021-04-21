@@ -6,26 +6,7 @@ class Cluster:
     def get_center(self):
         return self.center
 
-    def update_center2(self, dot, sign=1):
-        """ center =  (center *N + dot) / N+1 """
-        if self.N + sign == 0:
-            print("remove the only dot - Error !!")
-        dim_num = len(dot)
-        for axis in range(dim_num):
-            tmp = self.center[axis] * self.N
-            dot[axis] = dot[axis] * sign
-            self.center[axis] = tmp + dot[axis]
-            self.N += sign
-            self.center[axis] = self.center[axis] / self.N
-
-        f = lambda arr, num: [ele * num for ele in arr]
-        tmp = f(self.center, self.N)
-        dot = f(dot, sign)
-        self.center = [sum(x) for x in zip(tmp, dot)]
-        self.N += sign
-        self.center = f(self.center, 1 / self.N)
-
-    def update_center(self, dot, sign=1):
+      def update_center(self, dot, sign=1):
         """ center =  (center *N + dot) / N+1 """
         if self.N + sign == 0:
             print("remove the only dot - Error !!")
